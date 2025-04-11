@@ -36,3 +36,10 @@
 Осталось 3 дня до дедлайна
 Ссылка: https://github.com/user/repo/issues/1
 ```
+
+## Пример .env файла:
+```text
+GITHUB_TOKEN="github_pat_1234"
+TELEGRAM_TOKEN="1234:QWERTY"
+REPO_NAME="your_nick/repo_name"
+```
