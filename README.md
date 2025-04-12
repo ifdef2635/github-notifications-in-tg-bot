@@ -56,7 +56,7 @@ REPO_NAME="your_nick/repo_name"
 
 1. **Клонируйте репозиторий**:
    ```bash
-   git clone [https://github.com/your_repo.git](https://github.com/ifdef2635/abcdef.git)
+   git clone https://github.com/ifdef2635/abcdef.git
    cd abcdef
    ```
 
