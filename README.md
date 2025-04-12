@@ -66,8 +66,8 @@ REPO_NAME="your_nick/repo_name"
    source .venv/bin/activate  # Для Windows: .venv\Scripts\activate
    pip install -r requirements.txt
    ```
-3. **Настройте файл ```.env```**:
-Создайте файл .env в корне проекта и добавьте следующие переменные:
+3. **Настройте файл .env**:
+Создайте файл `.env` в корне проекта и добавьте следующие переменные:
 ```python
 GITHUB_TOKEN="github_pat_1234"
 TELEGRAM_TOKEN="1234:QWERTY"
