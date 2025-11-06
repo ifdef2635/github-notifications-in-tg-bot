@@ -60,7 +60,7 @@ REPO_NAME="your_nick/repo_name"
    cd abcdef
    ```
 
-2. **Создайте виртуальное окружение и установите зависимости**:
+2. **Создайте виртуальное окружение (опционально) и установите зависимости**:
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # Для Windows: .venv\Scripts\activate
