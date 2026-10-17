@@ -1,25 +1,27 @@
 import re
+import time
 from datetime import datetime
-from config import repo
-from functools import lru_cache
 
-_last_update = None
-_cache_timeout = 300
+from config import get_repo
 
-
-@lru_cache(maxsize=1)
-def get_issues_cached(timestamp):
-    return list(repo.get_issues(state='open'))
+_CACHE_TTL = 300  # секунд
+_cache_time = None
+_cache_issues = []
 
 
 def get_issues():
-    global _last_update
-    current_time = datetime.now().timestamp()
+    """Открытые задачи (без pull request'ов), кэшируются на 5 минут.
 
-    if _last_update is None or (current_time - _last_update) > _cache_timeout:
-        _last_update = current_time
-        return get_issues_cached(current_time)
-    return get_issues_cached(_last_update)
+    Вызов блокирующий (сетевые запросы PyGithub), из асинхронного кода его
+    нужно запускать через asyncio.to_thread.
+    """
+    global _cache_time, _cache_issues
+    if _cache_time is None or time.monotonic() - _cache_time > _CACHE_TTL:
+        # GitHub отдаёт pull request'ы вместе с задачами — отбрасываем их.
+        _cache_issues = [issue for issue in get_repo().get_issues(state='open')
+                         if not issue.pull_request]
+        _cache_time = time.monotonic()
+    return _cache_issues
 
 
 def parse_deadline(issue):
@@ -40,13 +42,12 @@ def parse_deadline(issue):
         # DD/MM/YYYY или DD-MM-YYYY
         r'(?:Дедлайн|Deadline)[:\s]*(\d{2}[-/\s]\d{2}[-/\s]\d{4})',
     ]
-    date_formats = ['%Y-%m-%d', '%Y.%m.%d', '%d/%m/%Y', '%d-%m-%Y']
+    date_formats = ['%Y-%m-%d', '%d-%m-%Y']
 
     for pattern in patterns:
         match = re.search(pattern, issue.body, re.IGNORECASE)
         if match:
-            date_str = match.group(1)
-            date_str = re.sub(r'[.\s/]', '-', date_str)
+            date_str = re.sub(r'[.\s/]', '-', match.group(1))
             for fmt in date_formats:
                 try:
                     return datetime.strptime(date_str, fmt).date()
